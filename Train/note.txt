@@ -1,0 +1,33 @@
+*foder:
+- faster_rcnn_inception_v2_coco_2018_01_28: chứa model đã train(có graph) dùng để cho lần train sau
+- CAPTCHA_inference_graph: sau khi export graph thì sẽ được lưu ở đây, file frozen_inference_graph.pb là graph để load khi dự đoán
+- CAPTCHA_training: chứa nhãn và file config
+- CAPTCHA_training_model: Chứa model sau khi train
+- CAPTCHA_images: Chứa dữ liệu để train
+- labelImg: tool để gán nhãn. chạy file labelImg.py
+- object_detection, nets, deployment: là các thư viện 
+
+
+*version:
+tensorflow ==1.14
+python 3.6
+
+
+*Trước khi train được phải chạy lệnh:
+protoc object_detection/protos/*.proto --python_out=.
+
+nếu máy không có protoc thì dow bản protoc.exe version 3.4 32 bit
+
+*convert xml => csv:
+python xml_to_csv.py
+
+*convert csv => tf.record
+python generate_tfrecord.py
+
+*train: 
+python train.py --logtostderr --train_dir=CAPTCHA_training_model/ --pipeline_config_path=CAPTCHA_training/faster_rcnn_inception_v2_coco.config
+
+
+*export graph:
+python export_inference_graph.py --input_type image_tensor --pipeline_config_path CAPTCHA_training/faster_rcnn_inception_v2_coco.config --trained_checkpoint_prefix CAPTCHA_training/model.ckpt-40000 --output_directory CAPTCHA_inference_graph
+
